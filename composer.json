@@ -1,5 +1,5 @@
 {
-    "name": "gringlas/DHLApi",
+    "name": "gringlas/cakephp-dhlapi",
     "description": "DHLApi plugin for CakePHP",
     "type": "cakephp-plugin",
     "require": {

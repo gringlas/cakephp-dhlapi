@@ -1,0 +1,30 @@
+{
+    "name": "gringlas/DHLApi",
+    "description": "DHLApi plugin for CakePHP",
+    "type": "cakephp-plugin",
+    "require": {
+        "php": ">=5.5.9",
+        "cakephp/cakephp": ">=3.3.2 <4.0.0"
+    },
+    "authors" : [
+        {
+            "name" : "Sebastian Köller",
+            "role" : "Author",
+            "homepage" : "www.phihochzwei.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "DHLApi\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "DHLApi\\Test\\": "tests",
+            "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+        }
+    }
+}

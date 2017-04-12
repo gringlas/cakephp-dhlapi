@@ -14,7 +14,7 @@ class CapabilityCheckDHLApiRequest extends DHLApiRequest
     public function callApi()
     {
         $myClient = new Client();
-        $response = $myClient->post('https://xmlpitest-ea.dhl.com/XMLShippingServlet', $this->setRequest(), [
+        $response = $myClient->post($this->config['uri'], $this->setRequest(), [
             'headers' => [
                 'Content-Type' => 'application/xml'
             ]

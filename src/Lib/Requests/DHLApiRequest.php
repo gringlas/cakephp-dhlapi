@@ -13,7 +13,19 @@ abstract class DHLApiRequest
 
     protected $request;
     protected $data;
+
+    /**
+     * @var $config
+     *
+     * Configuration array needs the following keys:
+     * 'uri' => URI to DHL XML webservice
+     * 'siteID' => DHL siteID
+     * 'password' => DHL password
+     * 'accountNumber' => DHL accountnumber
+     *
+     */
     protected $config;
+
     protected $isError = false;
     protected $errorMessage = "";
     protected $response;

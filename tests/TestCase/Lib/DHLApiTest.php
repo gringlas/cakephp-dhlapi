@@ -94,12 +94,12 @@ class DHLApiTest extends TestCase
         $result = $CapabilityCheckApiRequest->convertTimeToPTnHnM("14:30");
         $this->assertEquals("PT14H30M", $result);
 
-        $result = $CapabilityCheckApiRequest->convertPTnHnMToTime("PT07H00M");
+        $result = CapabilityCheckDHLApiRequest::convertPTnHnMToTime("PT07H00M");
         $this->assertEquals("07:00", $result);
-        $result = $CapabilityCheckApiRequest->convertPTnHnMToTime("PT14H30M");
+        $result = CapabilityCheckDHLApiRequest::convertPTnHnMToTime("PT14H30M");
         $this->assertEquals("14:30", $result);
 
-        $result = $CapabilityCheckApiRequest->convertPTnHnMToTime("PT18H");
+        $result = CapabilityCheckDHLApiRequest::convertPTnHnMToTime("PT18H");
         $this->assertEquals("18:00", $result);
     }
 }

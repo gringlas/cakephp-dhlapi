@@ -89,14 +89,14 @@ class CapabilityCheckDHLApiRequest extends DHLApiRequest
     }
 
 
-    public function convertTimeToPTnHnM($time)
+    public static function convertTimeToPTnHnM($time)
     {
         $time = explode(":", $time);
         return "PT".$time[0]."H".$time[1]."M";
     }
 
 
-    public function convertPTnHnMToTime($value)
+    public static function convertPTnHnMToTime($value)
     {
         $value = str_replace(['PT', 'H', 'M'], ['', ':', ''], $value);
         if (strlen($value) == 3) {

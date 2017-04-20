@@ -33,8 +33,9 @@ abstract class DHLApiRequest
 
     public function __construct($data, $config)
     {
-        $this->data = $this->mapData($data);
+        $this->data = $data;
         $this->config = $config;
+        $this->setRequest();
     }
 
     public abstract function setRequest();
@@ -58,9 +59,9 @@ abstract class DHLApiRequest
     }
 
 
-    protected function mapData($data)
+    public function getRequest()
     {
-        return $data;
+        return $this->request;
     }
 
 

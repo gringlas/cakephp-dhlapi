@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+### CakePHP template
+# CakePHP 3
+
+/vendor
+!/config/routes.php
+/config

@@ -2,8 +2,12 @@
 
 namespace App\Test\TestCase\Lib;
 
+use Cake\I18n\Date;
+use Cake\I18n\FrozenDate;
 use Cake\TestSuite\TestCase;
 use DHLApi\Lib\DHLApi;
+use DHLApi\Lib\Requests\BookPickupDHLApiRequest;
+use DHLApi\Lib\Requests\CapabilityCheckDHLApiRequest;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,35 +18,74 @@ use DHLApi\Lib\DHLApi;
 class DHLApiTest extends TestCase
 {
 
+    private $config;
+
     public function setUp()
     {
+        $this->config = [
+            'uri' => 'https://xmlpitest-ea.dhl.com/XMLShippingServlet',
+            'siteID' => 'xmlcimde',
+            'password' => 'kruY4DhZiA',
+            'accountNumber' => '143816942'
+        ];
         parent::setUp();
     }
 
-    public function testCheckAndBuildUri()
+    public function testBookpickup()
     {
-        $DHLApi = new DHLApi("bookPickup");
-        $result = (String) $DHLApi->callApi();
-        $this->assertContains("2017-02-28 00:00:00", $result);
+        $date = new FrozenDate();
+        $data = [
+            'companyname' => "Sebs PHPUNIT Test 1",
+            'address1' => "Kreuzstr. 1-3",
+            'packagelocation' => 'Praxis',
+            'city' => "Mülheim",
+            'postalcode' => "45468",
+            'pickupdate' => $date->modify("+1 day")->format('Y-m-d'),
+            'readybytime' => "08:00",
+            'closetime' => "09:30",
+            'personname' => "Sebastian Köller",
+            'phone' => "020888387559",
+            'cases' => 1
+        ];
+        $BookPickupDHLApiRequest = new BookPickupDHLApiRequest($data, $this->config);
+        $BookPickupDHLApiRequest->callApi();
+        $result = json_encode($BookPickupDHLApiRequest->getResponse());
+        $this->assertRegExp('/ordernumber":"[\d]+/i', $result);
 
-        $dateParser = new DateParser("Posted febr 12ND AT 6:00PM.");
-        $result = (String) $dateParser->getParsedDate();
-        $this->assertContains("2017-02-12 00:00:00", $result);
 
-        $dateParser = new DateParser("2016/03/12 00:00:00");
-        $result = (String) $dateParser->getParsedDate();
-        $this->assertContains("2016-03-12 00:00:00", $result);
 
-        $dateParser = new DateParser("10.12.2009 00:00:00");
-        $result = (String) $dateParser->getParsedDate();
-        $this->assertContains("2009-12-10 00:00:00", $result);
+        $data["readybytime"] = "19:00";
+        $data["closetime"] = "20:00";
+        $data["pickupdate"] = $date->format('Y-m-d');
+        $BookPickupDHLApiRequest = new BookPickupDHLApiRequest($data, $this->config);
+        $BookPickupDHLApiRequest->callApi();
+        $result = $BookPickupDHLApiRequest->getResponse();
+        $this->assertCount(1, $result['errorMessages']);
+    }
 
-        $now = new Chronos();
-        $now = $now->setTime(0,0);
-        $now = $now->day(3);
-        $dateParser = new DateParser("Heute ist der 3. im Jahre 16");
-        $result = (String) $dateParser->getParsedDate();
-        $this->assertContains((String) $now, $result);
 
+    public function testCapabilitycheck()
+    {
+        $date = new FrozenDate();
+        $data = [
+            'city' => 'Mülheim',
+            'postalcode' => '45468',
+            'pickupdate' => "2017-04-13",
+            'readybytime' => 'PT18H00M'
+        ];
+        $CapabilityCheckApiRequest = new CapabilityCheckDHLApiRequest($data, $this->config);
+        $CapabilityCheckApiRequest->callApi();
+        $result = $CapabilityCheckApiRequest->getResponse();
+
+        $assertResult = [
+            'isError' => false,
+            'errorMessages' => [
+                0 => ''
+            ],
+            'pickupDate' => '2017-04-13',
+            'pickupCutoffTime' => 'PT19H30M',
+            'bookingTime' => 'PT18H'
+        ];
+        $this->assertEquals(json_encode($result), json_encode($assertResult));
     }
 }

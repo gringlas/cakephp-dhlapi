@@ -10,7 +10,7 @@
         {
             "name" : "Sebastian Köller",
             "role" : "Author",
-            "homepage" : "www.phihochzwei.com"
+            "homepage" : "http://www.phihochzwei.com"
         }
     ],
     "require-dev": {

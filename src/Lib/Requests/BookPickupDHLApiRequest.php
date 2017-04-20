@@ -18,7 +18,7 @@ class BookPickupDHLApiRequest extends DHLApiRequest
     public function callApi()
     {
         $myClient = new Client();
-        $response = $myClient->post($this->config['uri'], $this->setRequest(), [
+        $response = $myClient->post($this->config['uri'], $this->getRequest(), [
             'headers' => [
                 'Content-Type' => 'application/xml'
             ]
@@ -49,7 +49,7 @@ class BookPickupDHLApiRequest extends DHLApiRequest
         return parent::getResponse();
     }
 
-
+/**
     protected function mapData($data)
     {
         $customerData = $data['user']->praxis;
@@ -67,7 +67,7 @@ class BookPickupDHLApiRequest extends DHLApiRequest
             'cases' => $customerData->cases
         ];
     }
-
+*/
 
     public function setRequest()
     {
@@ -131,7 +131,6 @@ class BookPickupDHLApiRequest extends DHLApiRequest
         <SpecialService>I</SpecialService>
     </ShipmentDetails>
 </req:BookPURequest>';
-    return $this->request;
     }
 
  }

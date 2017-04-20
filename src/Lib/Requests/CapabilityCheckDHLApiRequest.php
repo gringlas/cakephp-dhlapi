@@ -9,12 +9,15 @@
 namespace DHLApi\Lib\Requests;
 
 
+use Cake\Http\Client;
+
 class CapabilityCheckDHLApiRequest extends DHLApiRequest
 {
+
     public function callApi()
     {
         $myClient = new Client();
-        $response = $myClient->post($this->config['uri'], $this->setRequest(), [
+        $response = $myClient->post($this->config['uri'], $this->getRequest(), [
             'headers' => [
                 'Content-Type' => 'application/xml'
             ]
@@ -22,8 +25,13 @@ class CapabilityCheckDHLApiRequest extends DHLApiRequest
         if ($response->getStatusCode() == 200) {
             $this->dhlResponseBody = $response->body();
             $xml = $response->xml;
-            if (empty($xml->xpath('//ActionStatus'))) {
-                $this->orderNumber = (String) $xml->xpath('//ConfirmationNumber')[0];
+            if (isset($xml->xpath('//QtdShp')[1])) {
+                $expressDomestic = $xml->xpath('//QtdShp')[1];
+                $this->response = [
+                    'pickupDate' => (String) $expressDomestic->PickupDate,
+                    'pickupCutoffTime' => (String) $expressDomestic->PickupCutoffTime,
+                    'bookingTime' => (String) $expressDomestic->BookingTime
+                ];
             } else {
                 $this->isError = true;
                 $this->errorCode = (String) $xml->xpath('//ConditionCode')[0];
@@ -34,24 +42,6 @@ class CapabilityCheckDHLApiRequest extends DHLApiRequest
             $this->errorMessage = "DHL Server not available";
             $this->errorCode = "DHLNA";
         }
-    }
-
-
-    protected function mapData($data)
-    {
-        return [
-            'city' => $data['collection']->city,
-            'postalcode' => $data['collection']->zip,
-            'pickupdate' => $data['collection']->date->format('Y-m-d'),
-            'readybytime' => $data['collection']->timefrom,
-            'closetime' => $data['collection']->timeto,
-        ];
-    }
-
-
-    public function getResponse()
-    {
-
     }
 
     public function setRequest()

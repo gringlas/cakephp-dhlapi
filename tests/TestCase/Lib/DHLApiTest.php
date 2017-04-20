@@ -31,6 +31,7 @@ class DHLApiTest extends TestCase
         parent::setUp();
     }
 
+
     public function testBookpickup()
     {
         $date = new FrozenDate();
@@ -87,5 +88,18 @@ class DHLApiTest extends TestCase
             'bookingTime' => 'PT18H'
         ];
         $this->assertEquals(json_encode($result), json_encode($assertResult));
+
+        $result = $CapabilityCheckApiRequest->convertTimeToPTnHnM("07:00");
+        $this->assertEquals("PT07H00M", $result);
+        $result = $CapabilityCheckApiRequest->convertTimeToPTnHnM("14:30");
+        $this->assertEquals("PT14H30M", $result);
+
+        $result = $CapabilityCheckApiRequest->convertPTnHnMToTime("PT07H00M");
+        $this->assertEquals("07:00", $result);
+        $result = $CapabilityCheckApiRequest->convertPTnHnMToTime("PT14H30M");
+        $this->assertEquals("14:30", $result);
+
+        $result = $CapabilityCheckApiRequest->convertPTnHnMToTime("PT18H");
+        $this->assertEquals("18:00", $result);
     }
 }

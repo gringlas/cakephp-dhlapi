@@ -59,7 +59,7 @@ class CapabilityCheckDHLApiRequest extends DHLApiRequest
     <BkgDetails>
       <PaymentCountryCode>DE</PaymentCountryCode>
       <Date>'.$this->data['pickupdate'].'</Date>
-      <ReadyTime>PT15H00M</ReadyTime>
+      <ReadyTime>'.$this->data['readybytime'].'</ReadyTime>
       <ReadyTimeGMTOffset>+01:00</ReadyTimeGMTOffset>
       <DimensionUnit>CM</DimensionUnit>
       <WeightUnit>KG</WeightUnit>
@@ -88,5 +88,21 @@ class CapabilityCheckDHLApiRequest extends DHLApiRequest
 </p:DCTRequest>';
     }
 
+
+    public function convertTimeToPTnHnM($time)
+    {
+        $time = explode(":", $time);
+        return "PT".$time[0]."H".$time[1]."M";
+    }
+
+
+    public function convertPTnHnMToTime($value)
+    {
+        $value = str_replace(['PT', 'H', 'M'], ['', ':', ''], $value);
+        if (strlen($value) == 3) {
+            $value .= "00";
+        }
+        return $value;
+    }
 
 }

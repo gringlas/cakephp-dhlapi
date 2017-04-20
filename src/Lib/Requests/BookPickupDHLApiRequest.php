@@ -49,25 +49,6 @@ class BookPickupDHLApiRequest extends DHLApiRequest
         return parent::getResponse();
     }
 
-/**
-    protected function mapData($data)
-    {
-        $customerData = $data['user']->praxis;
-        return [
-            'companyname' => substr($customerData->praxis, 0 ,35),
-            'address1' => $data['collection']->street,
-            'packagelocation' => 'Praxis',
-            'city' => $data['collection']->city,
-            'postalcode' => $data['collection']->zip,
-            'pickupdate' => $data['collection']->date->format('Y-m-d'),
-            'readybytime' => $data['collection']->timefrom,
-            'closetime' => $data['collection']->timeto,
-            'personname' => substr($customerData->firstname . ' '. $customerData->surname,0,35),
-            'phone' => $customerData->phone,
-            'cases' => $customerData->cases
-        ];
-    }
-*/
 
     public function setRequest()
     {

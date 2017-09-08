@@ -28,7 +28,7 @@ abstract class DHLApiRequest
 
     protected $isError = false;
     protected $errorMessage = "";
-    protected $response;
+    protected $response = [];
 
 
     public function __construct($data, $config)
@@ -41,11 +41,17 @@ abstract class DHLApiRequest
     public abstract function setRequest();
     public abstract function callApi();
 
+
     public function getIsError()
     {
         return $this->isError;
     }
 
+
+    public function getErrorMessage()
+    {
+        return $this->errorMessage;
+    }
 
     public function getResponse()
     {

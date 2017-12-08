@@ -7,7 +7,9 @@ use Cake\I18n\FrozenDate;
 use Cake\TestSuite\TestCase;
 use DHLApi\Lib\DHLApi;
 use DHLApi\Lib\Requests\BookPickupDHLApiRequest;
+use DHLApi\Lib\Requests\CancelPickupDHLApiRequest;
 use DHLApi\Lib\Requests\CapabilityCheckDHLApiRequest;
+use DHLApi\Lib\Requests\ShipmentLabelDHLApiRequest;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,19 +22,20 @@ class DHLApiTest extends TestCase
 
     private $config;
 
+
     public function setUp()
     {
         $this->config = [
             'uri' => 'https://xmlpitest-ea.dhl.com/XMLShippingServlet',
-            'siteID' => 'xmlcimde',
-            'password' => 'kruY4DhZiA',
-            'accountNumber' => '143816942'
+            'siteID' => 'ImexDental',
+            'password' => '5d4LixjNwQ',
+            'accountNumber' => '144053708'
         ];
         parent::setUp();
     }
 
 
-    public function testBookpickup()
+    private function doValidPickup()
     {
         $date = new FrozenDate();
         $data = [
@@ -50,22 +53,28 @@ class DHLApiTest extends TestCase
         ];
         $BookPickupDHLApiRequest = new BookPickupDHLApiRequest($data, $this->config);
         $BookPickupDHLApiRequest->callApi();
-        $result = json_encode($BookPickupDHLApiRequest->getResponse());
-        $this->assertRegExp('/ordernumber":"[\d]+/i', $result);
-
-
-
-        $data["readybytime"] = "19:00";
-        $data["closetime"] = "20:00";
-        $data["pickupdate"] = $date->format('Y-m-d');
-        $BookPickupDHLApiRequest = new BookPickupDHLApiRequest($data, $this->config);
-        $BookPickupDHLApiRequest->callApi();
-        $result = $BookPickupDHLApiRequest->getResponse();
-        $this->assertCount(1, $result['errorMessages']);
+        return $BookPickupDHLApiRequest->getResponse();
     }
 
 
-    public function testCapabilitycheck()
+    public function __testBookpickup()
+    {
+        $result = json_encode($this->doValidPickup());
+        $this->assertRegExp('/ordernumber":"[\d]+/i', $result);
+
+        /**
+         * $date = new FrozenDate();
+         * $data["readybytime"] = "19:00";
+         * $data["closetime"] = "20:00";
+         * $data["pickupdate"] = $date->format('Y-m-d');
+         * $BookPickupDHLApiRequest = new BookPickupDHLApiRequest($data, $this->config);
+         * $BookPickupDHLApiRequest->callApi();
+         * $result = $BookPickupDHLApiRequest->getResponse();
+         * $this->assertCount(1, $result['errorMessages']);*/
+    }
+
+
+    public function __testCapabilitycheck()
     {
         $date = new FrozenDate();
         $data = [
@@ -101,5 +110,35 @@ class DHLApiTest extends TestCase
 
         $result = CapabilityCheckDHLApiRequest::convertPTnHnMToTime("PT18H");
         $this->assertEquals("18:00", $result);
+    }
+
+
+    public function __testCancelPickup()
+    {
+        $date = new FrozenDate();
+        $pickupId = $this->doValidPickup()['ordernumber'];
+        $this->assertNotEquals(0, $pickupId);
+        $data = [
+            'confirmationNumber' => $pickupId,
+            'requestorName' => 'Sebastian Köller',
+            'countryCode' => 'DE',
+            'reason' => '001',
+            'pickupDate' => $date->toDateString()
+        ];
+        $cancelPickupApiRequest = new CancelPickupDHLApiRequest($data, $this->config);
+        $cancelPickupApiRequest->callApi();
+        $cancelPickupApiRequest->getResponse();
+
+    }
+
+
+    public function testShipmentLabel()
+    {
+        $data = [
+            ''
+        ];
+        $shipmentLabelApiRequest = new ShipmentLabelDHLApiRequest($data, $this->config);
+        $shipmentLabelApiRequest->callApi();
+        $shipmentLabelApiRequest->getResponse();
     }
 }

@@ -46,7 +46,7 @@ class CancelPickupDHLApiRequest extends DHLApiRequest
     public function getResponse()
     {
         $this->response = [
-            'ordernumber' => $this->orderNumber
+            'ordernumber' => $this->data['confirmationNumber']
         ];
         return parent::getResponse();
     }

@@ -113,11 +113,22 @@ class DHLApiTest extends TestCase
     }
 
 
-    public function __testCancelPickup()
+    public function testCancelPickup()
     {
         $date = new FrozenDate();
         $pickupId = $this->doValidPickup()['ordernumber'];
         $this->assertNotEquals(0, $pickupId);
+        $data = [
+            'confirmationNumber' => $pickupId + 1,
+            'requestorName' => 'Sebastian Köller',
+            'countryCode' => 'DE',
+            'reason' => '001',
+            'pickupDate' => $date->toDateString()
+        ];
+        $cancelPickupApiRequest = new CancelPickupDHLApiRequest($data, $this->config);
+        $cancelPickupApiRequest->callApi();
+        $this->assertTrue($cancelPickupApiRequest->getIsError());
+
         $data = [
             'confirmationNumber' => $pickupId,
             'requestorName' => 'Sebastian Köller',
@@ -127,12 +138,11 @@ class DHLApiTest extends TestCase
         ];
         $cancelPickupApiRequest = new CancelPickupDHLApiRequest($data, $this->config);
         $cancelPickupApiRequest->callApi();
-        $cancelPickupApiRequest->getResponse();
-
+        $this->assertFalse($cancelPickupApiRequest->getIsError());
     }
 
 
-    public function testShipmentLabel()
+    public function __testShipmentLabel()
     {
         $data = [
             ''

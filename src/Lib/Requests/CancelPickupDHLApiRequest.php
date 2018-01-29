@@ -55,30 +55,23 @@ class CancelPickupDHLApiRequest extends DHLApiRequest
     public function setRequest()
     {
         $now = Chronos::now();
-        $this->request = '
-<?xml version="1.0" encoding="UTF-8"?>
+        $this->request = '<?xml version="1.0" encoding="UTF-8"?>
 <req:CancelPURequest xmlns:req="http://www.dhl.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://www.dhl.com cancel-pickup-global-req_EA.xsd" schemaVersion="1.0">
- <Request>
-                <ServiceHeader>
-                    <MessageTime>' . $now->format("Y-m-d\TH:m:s.000-08:00") . '</MessageTime>
-                    <MessageReference>Esteemed Courier Service of DHL</MessageReference>
-                    <SiteID>' . $this->config['siteID'] . '</SiteID>
-                    <Password>' . $this->config['password'] . '</Password>
-                </ServiceHeader>
-            </Request>
-
+    <Request>
+        <ServiceHeader>
+            <MessageTime>' . $now->format("Y-m-d\TH:m:s.000-08:00") . '</MessageTime>
+            <MessageReference>' . $this->config['messageReference']. '</MessageReference>
+            <SiteID>' . $this->config['siteID'] . '</SiteID>
+            <Password>' . $this->config['password'] . '</Password>
+        </ServiceHeader>
+    </Request>
     <RegionCode>EU</RegionCode>	
 	<ConfirmationNumber>'.$this->data['confirmationNumber'].'</ConfirmationNumber>
-	
 	<RequestorName>'.$this->data['requestorName'].'</RequestorName>
-			<CountryCode>'.$this->data['countryCode'].'</CountryCode>
-
+    <CountryCode>'.$this->data['countryCode'].'</CountryCode>
 	<Reason>'.$this->data['reason'].'</Reason>	
-
 	<PickupDate>'.$this->data['pickupDate'].'</PickupDate>
-	
-	
 	<CancelTime>'. $now->format('H:i').'</CancelTime>    
 </req:CancelPURequest>';
     }

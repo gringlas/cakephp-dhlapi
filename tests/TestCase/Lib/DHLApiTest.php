@@ -4,6 +4,7 @@ namespace App\Test\TestCase\Lib;
 
 use Cake\I18n\Date;
 use Cake\I18n\FrozenDate;
+use Cake\I18n\FrozenTime;
 use Cake\TestSuite\TestCase;
 use DHLApi\Lib\DHLApi;
 use DHLApi\Lib\Requests\BookPickupDHLApiRequest;
@@ -29,7 +30,8 @@ class DHLApiTest extends TestCase
             'uri' => 'https://xmlpitest-ea.dhl.com/XMLShippingServlet',
             'siteID' => 'ImexDental',
             'password' => '5d4LixjNwQ',
-            'accountNumber' => '144053708'
+            'accountNumber' => '144053708',
+            'messageReference' => 'ImexDental PHPUNITTest'.time()
         ];
         parent::setUp();
     }
@@ -44,7 +46,7 @@ class DHLApiTest extends TestCase
             'packagelocation' => 'Praxis',
             'city' => "Mülheim",
             'postalcode' => "45468",
-            'pickupdate' => $date->modify("+1 day")->format('Y-m-d'),
+            'pickupdate' => $date->modify("+3 day")->format('Y-m-d'),
             'readybytime' => "08:00",
             'closetime' => "09:30",
             'personname' => "Sebastian Köller",
@@ -116,39 +118,54 @@ class DHLApiTest extends TestCase
     public function testCancelPickup()
     {
         $date = new FrozenDate();
-        $pickupId = $this->doValidPickup()['ordernumber'];
+
+        $pickupId = 26871;
         $this->assertNotEquals(0, $pickupId);
         $data = [
             'confirmationNumber' => $pickupId + 1,
             'requestorName' => 'Sebastian Köller',
             'countryCode' => 'DE',
             'reason' => '001',
-            'pickupDate' => $date->toDateString()
+            'pickupDate' => $date->modify("+3 day")->format('Y-m-d')
         ];
         $cancelPickupApiRequest = new CancelPickupDHLApiRequest($data, $this->config);
         $cancelPickupApiRequest->callApi();
-        $this->assertTrue($cancelPickupApiRequest->getIsError());
+        $this->assertTrue($cancelPickupApiRequest->getIsError(), "Eine erfundene Abholung wurde erfolgreich storniert.");
 
+        $pickupId = $this->doValidPickup()['ordernumber'];
         $data = [
             'confirmationNumber' => $pickupId,
             'requestorName' => 'Sebastian Köller',
             'countryCode' => 'DE',
             'reason' => '001',
-            'pickupDate' => $date->toDateString()
+            'pickupDate' => $date->modify("+3 days")->toDateString()
         ];
         $cancelPickupApiRequest = new CancelPickupDHLApiRequest($data, $this->config);
         $cancelPickupApiRequest->callApi();
-        $this->assertFalse($cancelPickupApiRequest->getIsError());
+        $this->assertFalse($cancelPickupApiRequest->getIsError(), "Eine aufgegebene Abholung wurde erfolgreich storniert.");
     }
 
 
-    public function __testShipmentLabel()
+    public function testShipmentLabel()
     {
+        $frozenTime = new FrozenTime();
         $data = [
-            ''
+            'praxis' => 'PHPUNIT Testpraxis',
+            'street' => 'Kreuzstr. 1-3',
+            'city' => 'Mülheim',
+            'district' => '',
+            'zip' => 45468,
+            'contact' => 'Sebastian Köller',
+            'phone' => '0208 88 387 559',
+            'cases' => 1,
+            'date' => $frozenTime->modify('+1 day')->format('Y-m-d')
         ];
         $shipmentLabelApiRequest = new ShipmentLabelDHLApiRequest($data, $this->config);
         $shipmentLabelApiRequest->callApi();
-        $shipmentLabelApiRequest->getResponse();
+        $response = $shipmentLabelApiRequest->getResponse();
+        $filename = 'tmp/shippingLabelTest.pdf';
+        file_put_contents($filename,  base64_decode($response['label']));
+        $this->assertEquals( 'application/pdf', mime_content_type($filename));
+        #unlink($filename);
     }
 }

@@ -46,9 +46,9 @@ class DHLApiTest extends TestCase
             'packagelocation' => 'Praxis',
             'city' => "Mülheim",
             'postalcode' => "45468",
-            'pickupdate' => $date->modify("+3 day")->format('Y-m-d'),
-            'readybytime' => "08:00",
-            'closetime' => "09:30",
+            'pickupdate' => $date->modify("+5 day")->format('Y-m-d'),
+            'readybytime' => "10:00",
+            'closetime' => "12:30",
             'personname' => "Sebastian Köller",
             'phone' => "020888387559",
             'cases' => 1
@@ -59,20 +59,20 @@ class DHLApiTest extends TestCase
     }
 
 
-    public function __testBookpickup()
+    public function testBookpickup()
     {
         $result = json_encode($this->doValidPickup());
         $this->assertRegExp('/ordernumber":"[\d]+/i', $result);
 
-        /**
-         * $date = new FrozenDate();
-         * $data["readybytime"] = "19:00";
-         * $data["closetime"] = "20:00";
-         * $data["pickupdate"] = $date->format('Y-m-d');
-         * $BookPickupDHLApiRequest = new BookPickupDHLApiRequest($data, $this->config);
-         * $BookPickupDHLApiRequest->callApi();
-         * $result = $BookPickupDHLApiRequest->getResponse();
-         * $this->assertCount(1, $result['errorMessages']);*/
+
+        $date = new FrozenDate();
+        $data["readybytime"] = "18:00";
+        $data["closetime"] = "20:00";
+        $data["pickupdate"] = $date->format('Y-m-d');
+        $BookPickupDHLApiRequest = new BookPickupDHLApiRequest($data, $this->config);
+        $BookPickupDHLApiRequest->callApi();
+        $result = $BookPickupDHLApiRequest->getResponse();
+        $this->assertCount(1, $result['errorMessages']);
     }
 
 

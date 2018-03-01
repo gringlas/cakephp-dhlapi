@@ -53,10 +53,9 @@ class BookPickupDHLApiRequest extends DHLApiRequest
     public function setRequest()
     {
         $now = Chronos::now();
-        $this->request = '
-<?xml version="1.0" encoding="UTF-8"?>
+        $this->request = '<?xml version="1.0" encoding="UTF-8"?>
 <req:BookPURequest xmlns:req="http://www.dhl.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.dhl.com
- book-pickup-global-req.xsd" schemaVersion="1.0">
+book-pickup-global-req.xsd" schemaVersion="1.0">
  <Request>
                 <ServiceHeader>
                     <MessageTime>'.$now->format("Y-m-d\TH:m:s.000-08:00").'</MessageTime>
@@ -96,10 +95,10 @@ class BookPickupDHLApiRequest extends DHLApiRequest
         <AWBNumber>7520067111</AWBNumber>
         <NumberOfPieces>1</NumberOfPieces>
         <Weight>10</Weight>
-        <WeightUnit>L</WeightUnit>
+        <WeightUnit>K</WeightUnit>
         <GlobalProductCode>D</GlobalProductCode>
         <DoorTo>DD</DoorTo>
-        <DimensionUnit>I</DimensionUnit>
+        <DimensionUnit>C</DimensionUnit>
         <InsuredAmount>999999.99</InsuredAmount>
         <InsuredCurrencyCode>EUR</InsuredCurrencyCode>
         <Pieces>

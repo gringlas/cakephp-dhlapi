@@ -37,18 +37,17 @@ class DHLApiTest extends TestCase
     }
 
 
-    private function doValidPickup()
+    private function doPickup(FrozenDate $pickupdate, $readytime, $closetime)
     {
-        $date = new FrozenDate();
         $data = [
             'companyname' => "Sebs PHPUNIT Test 1",
             'address1' => "Kreuzstr. 1-3",
             'packagelocation' => 'Praxis',
             'city' => "Mülheim",
             'postalcode' => "45468",
-            'pickupdate' => $date->modify("+5 day")->format('Y-m-d'),
-            'readybytime' => "10:00",
-            'closetime' => "12:30",
+            'pickupdate' => $pickupdate->format('Y-m-d'),
+            'readybytime' => $readytime,
+            'closetime' => $closetime,
             'personname' => "Sebastian Köller",
             'phone' => "020888387559",
             'cases' => 1
@@ -61,29 +60,28 @@ class DHLApiTest extends TestCase
 
     public function testBookpickup()
     {
-        $result = json_encode($this->doValidPickup());
-        $this->assertRegExp('/ordernumber":"[\d]+/i', $result);
-
-
         $date = new FrozenDate();
-        $data["readybytime"] = "18:00";
-        $data["closetime"] = "20:00";
-        $data["pickupdate"] = $date->format('Y-m-d');
-        $BookPickupDHLApiRequest = new BookPickupDHLApiRequest($data, $this->config);
-        $BookPickupDHLApiRequest->callApi();
-        $result = $BookPickupDHLApiRequest->getResponse();
-        $this->assertCount(1, $result['errorMessages']);
+        $result = json_encode($this->doPickup($date->modify("next Monday"), "17:00", "19:30"));
+        $this->assertRegExp('/ordernumber":"[\d]+/i', $result);
     }
 
 
-    public function __testCapabilitycheck()
+    public function testBookpickupWithError()
+    {
+        $date = new FrozenDate();
+        $result = $this->doPickup($date->modify("next Monday"), "18:00", "20:00");
+        $this->assertCount(1, $result['errorMessages'], "Die Abholung ist ungültig.");
+    }
+
+
+    public function testCapabilitycheck()
     {
         $date = new FrozenDate();
         $data = [
             'city' => 'Mülheim',
             'postalcode' => '45468',
-            'pickupdate' => "2017-04-13",
-            'readybytime' => 'PT18H00M'
+            'pickupdate' => $date->modify("next Monday")->format('Y-m-d'),
+            'readybytime' => 'PT08H00M'
         ];
         $CapabilityCheckApiRequest = new CapabilityCheckDHLApiRequest($data, $this->config);
         $CapabilityCheckApiRequest->callApi();
@@ -94,11 +92,12 @@ class DHLApiTest extends TestCase
             'errorMessages' => [
                 0 => ''
             ],
-            'pickupDate' => '2017-04-13',
+            'pickupDate' => $date->modify("next Monday")->format('Y-m-d'),
             'pickupCutoffTime' => 'PT19H30M',
             'bookingTime' => 'PT18H'
         ];
-        $this->assertEquals(json_encode($result), json_encode($assertResult));
+        $this->assertEquals(json_encode($assertResult), json_encode($result),
+            "Die Buchung muss bis spätestens 18:00 und die Abholung bis 19:30 erfolgen.");
 
         $result = $CapabilityCheckApiRequest->convertTimeToPTnHnM("07:00");
         $this->assertEquals("PT07H00M", $result);
@@ -110,8 +109,8 @@ class DHLApiTest extends TestCase
         $result = CapabilityCheckDHLApiRequest::convertPTnHnMToTime("PT14H30M");
         $this->assertEquals("14:30", $result);
 
-        $result = CapabilityCheckDHLApiRequest::convertPTnHnMToTime("PT18H");
-        $this->assertEquals("18:00", $result);
+        $result = CapabilityCheckDHLApiRequest::convertPTnHnMToTime("PT08H");
+        $this->assertEquals("08:00", $result);
     }
 
 

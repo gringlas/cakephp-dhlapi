@@ -31,7 +31,12 @@ class BookPickupDHLApiRequest extends DHLApiRequest
             } else {
                 $this->isError = true;
                 $this->errorCode = (String) $xml->xpath('//ConditionCode')[0];
-                $this->errorMessage = (String) $xml->xpath('//ConditionData')[0];
+                if (empty($xml->xpath('//ConditionData'))) {
+                    $errormessage = "Der Pickup Service meldet einen Fehler. Bitte passen sie die Abholzeiten an.";
+                } else {
+                    $errormessage = (String) $xml->xpath('//ConditionData')[0];
+                }
+                $this->errorMessage = $errormessage;
             }
         } else {
             $this->isError = true;
@@ -91,24 +96,18 @@ book-pickup-global-req.xsd" schemaVersion="1.0">
     <ShipmentDetails>
         <AccountType>D</AccountType>
         <AccountNumber>'.$this->config['accountNumber'].'</AccountNumber>
-        <BillToAccountNumber>100000000</BillToAccountNumber>
-        <AWBNumber>7520067111</AWBNumber>
-        <NumberOfPieces>1</NumberOfPieces>
+        <NumberOfPieces>'.$this->data['cases'].'</NumberOfPieces>
         <Weight>10</Weight>
         <WeightUnit>K</WeightUnit>
         <GlobalProductCode>D</GlobalProductCode>
         <DoorTo>DD</DoorTo>
         <DimensionUnit>C</DimensionUnit>
-        <InsuredAmount>999999.99</InsuredAmount>
-        <InsuredCurrencyCode>EUR</InsuredCurrencyCode>
         <Pieces>
             <Weight>3</Weight>
             <Width>47</Width>
             <Height>38</Height>
             <Depth>2</Depth>
         </Pieces>
-        <SpecialService>S</SpecialService>
-        <SpecialService>I</SpecialService>
     </ShipmentDetails>
 </req:BookPURequest>';
     }

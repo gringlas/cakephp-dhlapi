@@ -60,7 +60,6 @@ class CapabilityCheckDHLApiRequest extends DHLApiRequest
       <PaymentCountryCode>DE</PaymentCountryCode>
       <Date>'.$this->data['pickupdate'].'</Date>
       <ReadyTime>'.$this->data['readybytime'].'</ReadyTime>
-      <ReadyTimeGMTOffset>+01:00</ReadyTimeGMTOffset>
       <DimensionUnit>CM</DimensionUnit>
       <WeightUnit>KG</WeightUnit>
       <Pieces>
@@ -81,8 +80,6 @@ class CapabilityCheckDHLApiRequest extends DHLApiRequest
 	  <City>Essen</City>
     </To>
    <Dutiable>
-      <DeclaredCurrency>EUR</DeclaredCurrency>
-      <DeclaredValue>102.00</DeclaredValue>
     </Dutiable>
   </GetCapability>
 </p:DCTRequest>';

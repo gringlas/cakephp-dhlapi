@@ -64,7 +64,7 @@ book-pickup-global-req.xsd" schemaVersion="1.0">
  <Request>
                 <ServiceHeader>
                     <MessageTime>'.$now->format("Y-m-d\TH:m:s.000-08:00").'</MessageTime>
-                    <MessageReference>Esteemed Courier Service of DHL</MessageReference>
+                    <MessageReference>' . $this->config['messageReference']. '</MessageReference>
                     <SiteID>'.$this->config['siteID'].'</SiteID>
                     <Password>'.$this->config['password'].'</Password>
                 </ServiceHeader>

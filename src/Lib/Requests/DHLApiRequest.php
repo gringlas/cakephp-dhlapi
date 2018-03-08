@@ -35,6 +35,7 @@ abstract class DHLApiRequest
     {
         $this->data = $data;
         $this->config = $config;
+        $this->ensureConfig();
         $this->setRequest();
     }
 
@@ -78,10 +79,32 @@ abstract class DHLApiRequest
             <Request>
                 <ServiceHeader>
                     <MessageTime>'.$now->format("Y-m-d\TH:m:s.000-08:00").'</MessageTime>
-                    <MessageReference>Esteemed Courier Service of DHL</MessageReference>
+                    <MessageReference>'.$this->config['messageReference']. '</MessageReference>
                     <SiteID>'.$this->config['siteID'].'</SiteID>
                     <Password>'.$this->config['password'].'</Password>
                 </ServiceHeader>
             </Request>';
+    }
+
+
+    private function ensureConfig()
+    {
+        $this->config['messageReference'] = $this->ensureMessageReferenceLengthBetween28And32();
+    }
+
+    /**
+     * according to DHL Document XMLServices5.2_Pirckup.pdf (page 10) a MessageReference should be between 28 ands 32 characters
+     */
+    private function ensureMessageReferenceLengthBetween28And32()
+    {
+        if (!isset($this->config['messageReference'])) {
+            $messageReference = "CakePHP DHL Api " . time();
+        } else {
+            $messageReference = $this->config['messageReference'] . " " . time();
+        }
+        if (strlen($messageReference) < 28) {
+            $messageReference = str_pad($messageReference,28,"#");
+        }
+        return substr($messageReference, 0, 32);
     }
 }

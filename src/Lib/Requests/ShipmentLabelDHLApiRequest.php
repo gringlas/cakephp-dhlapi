@@ -79,7 +79,6 @@ ship-val-req_EA.xsd">
 <Request>
     <ServiceHeader>
         <MessageTime>' . $now->format("Y-m-d\TH:m:s.000-08:00") . '</MessageTime>
-        <MessageReference>' . $this->config['messageReference'] . '</MessageReference>
         <SiteID>' . $this->config['siteID'] . '</SiteID>
         <Password>' . $this->config['password'] . '</Password>
     </ServiceHeader>

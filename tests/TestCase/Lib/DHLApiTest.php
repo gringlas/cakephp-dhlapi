@@ -2,7 +2,6 @@
 
 namespace App\Test\TestCase\Lib;
 
-use Cake\I18n\Date;
 use Cake\I18n\FrozenDate;
 use Cake\I18n\FrozenTime;
 use Cake\TestSuite\TestCase;
@@ -31,7 +30,7 @@ class DHLApiTest extends TestCase
             'siteID' => 'ImexDental',
             'password' => '5d4LixjNwQ',
             'accountNumber' => '144053708',
-            'messageReference' => 'ImexDental PHPUNITTest'.time()
+            'messageReference' => 'ImexDental PHPUNITTest' . time()
         ];
         parent::setUp();
     }
@@ -114,12 +113,10 @@ class DHLApiTest extends TestCase
     }
 
 
-    public function testCancelPickup()
+    public function testCancelPickupNotExistingOrder()
     {
         $date = new FrozenDate();
-
         $pickupId = 26871;
-        $this->assertNotEquals(0, $pickupId);
         $data = [
             'confirmationNumber' => $pickupId + 1,
             'requestorName' => 'Sebastian Köller',
@@ -130,14 +127,19 @@ class DHLApiTest extends TestCase
         $cancelPickupApiRequest = new CancelPickupDHLApiRequest($data, $this->config);
         $cancelPickupApiRequest->callApi();
         $this->assertTrue($cancelPickupApiRequest->getIsError(), "Eine erfundene Abholung wurde erfolgreich storniert.");
+    }
 
-        $pickupId = $this->doValidPickup()['ordernumber'];
+
+    public function testCancelPickupValidOrder()
+    {
+        $date = new FrozenDate();
+        $pickup = $this->doPickup($date->modify("next Monday"), "17:00", "19:30");
         $data = [
-            'confirmationNumber' => $pickupId,
+            'confirmationNumber' => $pickup['ordernumber'],
             'requestorName' => 'Sebastian Köller',
             'countryCode' => 'DE',
             'reason' => '001',
-            'pickupDate' => $date->modify("+3 days")->toDateString()
+            'pickupDate' => $date->modify("next Monday")->toDateString()
         ];
         $cancelPickupApiRequest = new CancelPickupDHLApiRequest($data, $this->config);
         $cancelPickupApiRequest->callApi();
@@ -163,9 +165,9 @@ class DHLApiTest extends TestCase
         $shipmentLabelApiRequest->callApi();
         $response = $shipmentLabelApiRequest->getResponse();
         $filename = 'tmp/shippingLabelTest.pdf';
-        file_put_contents($filename,  base64_decode($response['label']));
-        $this->assertEquals( 'application/pdf', mime_content_type($filename));
-        #unlink($filename);
+        file_put_contents($filename, base64_decode($response['label']));
+        $this->assertEquals('application/pdf', mime_content_type($filename));
+        unlink($filename);
     }
 
     public function testShipmentLabelDateGermanFormat()
@@ -186,8 +188,8 @@ class DHLApiTest extends TestCase
         $shipmentLabelApiRequest->callApi();
         $response = $shipmentLabelApiRequest->getResponse();
         $filename = 'tmp/shippingLabelTest.pdf';
-        file_put_contents($filename,  base64_decode($response['label']));
-        $this->assertEquals( 'application/pdf', mime_content_type($filename));
+        file_put_contents($filename, base64_decode($response['label']));
+        $this->assertEquals('application/pdf', mime_content_type($filename));
         unlink($filename);
     }
 }

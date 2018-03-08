@@ -10,6 +10,7 @@ namespace DHLApi\Lib\Requests;
 
 
 use Cake\Http\Client;
+use Cake\Log\Log;
 
 class CapabilityCheckDHLApiRequest extends DHLApiRequest
 {
@@ -32,16 +33,21 @@ class CapabilityCheckDHLApiRequest extends DHLApiRequest
                     'pickupCutoffTime' => (String) $expressDomestic->PickupCutoffTime,
                     'bookingTime' => (String) $expressDomestic->BookingTime
                 ];
+                $logMessage = "Capabilitycheck for " . $this->response['pickupDate'] . " for city " .
+                        $this->data['city'] . " made";
             } else {
                 $this->isError = true;
                 $this->errorCode = (String) $xml->xpath('//ConditionCode')[0];
                 $this->errorMessage = (String) $xml->xpath('//ConditionData')[0];
+                $logMessage = $this->errorMessage;
             }
         } else {
             $this->isError = true;
             $this->errorMessage = "DHL Server not available";
             $this->errorCode = "DHLNA";
+            $logMessage = $this->errorMessage;
         }
+        Log::info($logMessage, 'dhl');
     }
 
     public function setRequest()

@@ -12,6 +12,7 @@ namespace DHLApi\Lib\Requests;
 use Cake\Chronos\Chronos;
 use Cake\Http\Client;
 use Cake\I18n\FrozenDate;
+use Cake\Log\Log;
 
 class ShipmentLabelDHLApiRequest extends DHLApiRequest
 {
@@ -45,16 +46,20 @@ class ShipmentLabelDHLApiRequest extends DHLApiRequest
             $xml = $response->xml;
             if (empty($xml->xpath('//ActionStatus'))) {
                 $this->label = $xml->xpath('//LabelImage')[0]->OutputImage;
+                $logMessage = "Shipmentlabe for company " . $this->data['praxis'] . " has been created";
             } else {
                 $this->isError = true;
                 $this->errorCode = (String)$xml->xpath('//ConditionCode')[0];
                 $this->errorMessage = (String)$xml->xpath('//ConditionData')[0];
+                $logMessage = $this->errorMessage . ". For company: " . $this->data['praxis'] ;
             }
         } else {
             $this->isError = true;
             $this->errorMessage = "DHL Server not available";
             $this->errorCode = "DHLNA";
+            $logMessage = $this->errorMessage . ". For company: " . $this->data['praxis'] ;
         }
+        Log::info($logMessage, 'dhl');
     }
 
 

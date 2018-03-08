@@ -2,6 +2,7 @@
 namespace DHLApi\Lib\Requests;
 use Cake\Chronos\Chronos;
 use Cake\Http\Client;
+use Cake\Log\Log;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,6 +29,7 @@ class BookPickupDHLApiRequest extends DHLApiRequest
             $xml = $response->xml;
             if (empty($xml->xpath('//ActionStatus'))) {
                 $this->orderNumber = (String) $xml->xpath('//ConfirmationNumber')[0];
+                $logMessage = "Pickup " . $this->orderNumber . " for company " . $this->data['companyname'] . " has been created";
             } else {
                 $this->isError = true;
                 $this->errorCode = (String) $xml->xpath('//ConditionCode')[0];
@@ -37,12 +39,15 @@ class BookPickupDHLApiRequest extends DHLApiRequest
                     $errormessage = (String) $xml->xpath('//ConditionData')[0];
                 }
                 $this->errorMessage = $errormessage;
+                $logMessage = $this->errorMessage . ". For company: " . $this->data['companyname'];
             }
         } else {
             $this->isError = true;
             $this->errorMessage = "DHL Server not available";
             $this->errorCode = "DHLNA";
+            $logMessage = $this->errorMessage . ". For company: " . $this->data['companyname'];
         }
+        Log::info($logMessage, 'dhl');
     }
 
 

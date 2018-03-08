@@ -31,18 +31,18 @@ class CancelPickupDHLApiRequest extends DHLApiRequest
             $xml = $response->xml;
             if (!empty($xml->xpath('//ActionNote')) && ($xml->xpath('//ActionNote')[0] == "Success")) {
                 $this->orderNumber = $this->data['confirmationNumber'];
-                $logMessage = "Pickup " . $this->data['confirmationNumber'] . "has been deleleted";
+                $logMessage = "Pickup " . $this->data['confirmationNumber'] . " for requestor " . $this->data['requestorName'] . " has been deleleted";
             } else {
                 $this->isError = true;
                 $this->errorCode = (String)$xml->xpath('//ConditionCode')[0];
                 $this->errorMessage = (String)$xml->xpath('//ConditionData')[0];
-                $logMessage = $this->errorMessage;
+                $logMessage = $this->errorMessage . ". For requestor: " . $this->data['requestorName'];
             }
         } else {
             $this->isError = true;
             $this->errorMessage = "DHL Server not available";
             $this->errorCode = "DHLNA";
-            $logMessage = $this->errorMessage;
+            $logMessage = $this->errorMessage . ". For requestor: " . $this->data['requestorName'];
         }
         Log::info($logMessage, 'dhl');
     }

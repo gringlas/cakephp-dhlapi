@@ -167,4 +167,27 @@ class DHLApiTest extends TestCase
         $this->assertEquals( 'application/pdf', mime_content_type($filename));
         #unlink($filename);
     }
+
+    public function testShipmentLabelDateGermanFormat()
+    {
+        $frozenTime = new FrozenTime();
+        $data = [
+            'praxis' => 'PHPUNIT Testpraxis',
+            'street' => 'Kreuzstr. 1-3',
+            'city' => 'Mülheim',
+            'district' => '',
+            'zip' => 45468,
+            'contact' => 'Sebastian Köller',
+            'phone' => '0208 88 387 559',
+            'cases' => 1,
+            'date' => $frozenTime->modify('+1 day')->format('d.m.Y')
+        ];
+        $shipmentLabelApiRequest = new ShipmentLabelDHLApiRequest($data, $this->config);
+        $shipmentLabelApiRequest->callApi();
+        $response = $shipmentLabelApiRequest->getResponse();
+        $filename = 'tmp/shippingLabelTest.pdf';
+        file_put_contents($filename,  base64_decode($response['label']));
+        $this->assertEquals( 'application/pdf', mime_content_type($filename));
+        unlink($filename);
+    }
 }

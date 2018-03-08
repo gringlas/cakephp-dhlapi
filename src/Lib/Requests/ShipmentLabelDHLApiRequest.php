@@ -11,11 +11,26 @@ namespace DHLApi\Lib\Requests;
 
 use Cake\Chronos\Chronos;
 use Cake\Http\Client;
+use Cake\I18n\FrozenDate;
 
 class ShipmentLabelDHLApiRequest extends DHLApiRequest
 {
 
     private $label = '';
+
+
+    private function ensureData()
+    {
+        $this->data['praxis'] = substr($this->data['praxis'],0,34);
+        $this->data['date'] = $this->ensureYmd($this->data['date']);
+    }
+
+
+    private function ensureYmd($date)
+    {
+        $date = new FrozenDate($date);
+        return $date->format('Y-m-d');
+    }
 
     public function callApi()
     {
@@ -54,6 +69,7 @@ class ShipmentLabelDHLApiRequest extends DHLApiRequest
 
     public function setRequest()
     {
+        $this->ensureData();
         $now = Chronos::now();
         $this->request = '
 <?xml version="1.0" encoding="UTF-8"?>

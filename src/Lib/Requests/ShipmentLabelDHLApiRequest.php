@@ -98,11 +98,10 @@ ship-val-req_EA.xsd">
     <DutyPaymentType>R</DutyPaymentType>
 </Billing>
 <Consignee>
-    <CompanyName>' . $this->data['praxis'] . '</CompanyName>
-    <AddressLine>' . $this->data['street'] . '</AddressLine>
-    <City>' . $this->data['city'] . '</City>
-    <Division>' . $this->data['district'] . '</Division>
-    <PostalCode>' . $this->data['zip'] . '</PostalCode>
+    <CompanyName>Imex Dental und Technik GmbH</CompanyName>
+    <AddressLine>Bonsiepen 6-8</AddressLine>
+    <City>Essen</City>
+    <PostalCode>45136</PostalCode>
     <CountryCode>DE</CountryCode>
     <CountryName>Germany</CountryName>
     <Contact>
@@ -138,19 +137,16 @@ ship-val-req_EA.xsd">
 </ShipmentDetails>
 <Shipper>
     <ShipperID>' . $this->config['accountNumber'] . '</ShipperID>
-    <CompanyName>unique company ptd limit 1234567890</CompanyName>
-    <AddressLine>XYZ-Str. 123</AddressLine>
-    <City>Koeln</City>
+    <CompanyName>' . $this->data['praxis'] . '</CompanyName>
+    <AddressLine>' . $this->data['street'] . '</AddressLine>
+    <City>' . $this->data['city'] . '</City>
     <Division></Division>
-    <PostalCode>51113</PostalCode>
+    <PostalCode>' . $this->data['zip'] . '</PostalCode>
     <CountryCode>DE</CountryCode>
     <CountryName>Germany</CountryName>
     <Contact>
-        <PersonName>shipper unique ptd limit 1234567890</PersonName>
-        <PhoneNumber>11234-325423</PhoneNumber>
-        <PhoneExtension>45232</PhoneExtension>
-        <FaxNumber>11234325423</FaxNumber>
-        <Telex>454586</Telex>
+        <PersonName>'.$this->data['contact'].'</PersonName>
+        <PhoneNumber>'.$this->data['phone'].'</PhoneNumber>
     </Contact>
 </Shipper>
 <EProcShip>N</EProcShip>

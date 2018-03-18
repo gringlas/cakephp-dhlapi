@@ -105,8 +105,8 @@ ship-val-req_EA.xsd">
     <CountryCode>DE</CountryCode>
     <CountryName>Germany</CountryName>
     <Contact>
-        <PersonName>' . $this->data['contact'] . '</PersonName>
-        <PhoneNumber>' . $this->data['phone'] . '</PhoneNumber>
+        <PersonName></PersonName>
+        <PhoneNumber>0201749990</PhoneNumber>
         <PhoneExtension>na</PhoneExtension>
         <FaxNumber>na</FaxNumber>
         <Telex>na</Telex>
@@ -147,6 +147,9 @@ ship-val-req_EA.xsd">
     <Contact>
         <PersonName>'.$this->data['contact'].'</PersonName>
         <PhoneNumber>'.$this->data['phone'].'</PhoneNumber>
+        <PhoneExtension>na</PhoneExtension>
+        <FaxNumber>na</FaxNumber>
+        <Telex>na</Telex>
     </Contact>
 </Shipper>
 <EProcShip>N</EProcShip>

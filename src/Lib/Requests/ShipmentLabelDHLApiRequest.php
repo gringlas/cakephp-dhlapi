@@ -44,20 +44,27 @@ class ShipmentLabelDHLApiRequest extends DHLApiRequest
         if ($response->getStatusCode() == 200) {
             $this->dhlResponseBody = $response->body();
             $xml = $response->xml;
-            if (empty($xml->xpath('//ActionStatus'))) {
-                $this->label = $xml->xpath('//LabelImage')[0]->OutputImage;
-                $logMessage = "Shipmentlabe for company " . $this->data['praxis'] . " has been created";
+            if ($xml) {
+                if (empty($xml->xpath('//ActionStatus'))) {
+                    $this->label = $xml->xpath('//LabelImage')[0]->OutputImage;
+                    $logMessage = "Shipmentlabe for company " . $this->data['praxis'] . " has been created";
+                } else {
+                    $this->isError = true;
+                    $this->errorCode = (String)$xml->xpath('//ConditionCode')[0];
+                    $this->errorMessage = (String)$xml->xpath('//ConditionData')[0];
+                    $logMessage = $this->errorMessage . ". For company: " . $this->data['praxis'];
+                }
             } else {
                 $this->isError = true;
-                $this->errorCode = (String)$xml->xpath('//ConditionCode')[0];
-                $this->errorMessage = (String)$xml->xpath('//ConditionData')[0];
-                $logMessage = $this->errorMessage . ". For company: " . $this->data['praxis'] ;
+                $this->errorCode = 500;
+                $this->errorMessage = "Propably UTF-8 Error. No Shipment Label generated, but won't block process.";
+                $logMessage = $this->errorMessage . ". For company: " . $this->data['praxis'];
             }
         } else {
             $this->isError = true;
             $this->errorMessage = "DHL Server not available";
             $this->errorCode = "DHLNA";
-            $logMessage = $this->errorMessage . ". For company: " . $this->data['praxis'] ;
+            $logMessage = $this->errorMessage . ". For company: " . $this->data['praxis'];
         }
         Log::info($logMessage, 'dhl');
     }
@@ -105,7 +112,7 @@ ship-val-req_EA.xsd">
     <CountryCode>DE</CountryCode>
     <CountryName>Germany</CountryName>
     <Contact>
-        <PersonName></PersonName>
+        <PersonName> </PersonName>
         <PhoneNumber>0201749990</PhoneNumber>
         <PhoneExtension>na</PhoneExtension>
         <FaxNumber>na</FaxNumber>

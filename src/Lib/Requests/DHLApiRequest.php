@@ -107,4 +107,17 @@ abstract class DHLApiRequest
         }
         return substr($messageReference, 0, 32);
     }
+
+
+    /**
+     * ShipmentLabel sends back UTF-8 broken XML documents, even if correctly utf-8 encoded requests are made,
+     * when trying to use names with umlauts, so this function could replace those.
+     *
+     * @param $string
+     * @return mixed
+     */
+    protected function replaceUmlauts($string)
+    {
+        return str_replace(['ü','Ü','ä','Ä','ö','Ö','ß'],['u','U','a','A','o','O','s'], $string);
+    }
 }

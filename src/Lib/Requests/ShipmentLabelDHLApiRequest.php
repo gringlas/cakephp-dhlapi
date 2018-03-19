@@ -144,15 +144,15 @@ ship-val-req_EA.xsd">
 </ShipmentDetails>
 <Shipper>
     <ShipperID>' . $this->config['accountNumber'] . '</ShipperID>
-    <CompanyName>' . $this->data['praxis'] . '</CompanyName>
-    <AddressLine>' . $this->data['street'] . '</AddressLine>
-    <City>' . $this->data['city'] . '</City>
+    <CompanyName>' . $this->replaceUmlauts($this->data['praxis']) . '</CompanyName>
+    <AddressLine>' . $this->replaceUmlauts($this->data['street']) . '</AddressLine>
+    <City>' . $this->replaceUmlauts($this->data['city']) . '</City>
     <Division></Division>
     <PostalCode>' . $this->data['zip'] . '</PostalCode>
     <CountryCode>DE</CountryCode>
     <CountryName>Germany</CountryName>
     <Contact>
-        <PersonName>'.$this->data['contact'].'</PersonName>
+        <PersonName>' . $this->replaceUmlauts($this->data['contact']) . '</PersonName>
         <PhoneNumber>'.$this->data['phone'].'</PhoneNumber>
         <PhoneExtension>na</PhoneExtension>
         <FaxNumber>na</FaxNumber>
@@ -162,6 +162,8 @@ ship-val-req_EA.xsd">
 <EProcShip>N</EProcShip>
 <LabelImageFormat>PDF</LabelImageFormat>
 </req:ShipmentValidateRequestEA>';
-        $this->request = utf8_encode($this->request);
     }
+
+
+
 }

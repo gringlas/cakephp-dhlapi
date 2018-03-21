@@ -40,6 +40,7 @@ class BookPickupDHLApiRequest extends DHLApiRequest
                 }
                 $this->errorMessage = $errormessage;
                 $logMessage = $this->errorMessage . ". For company: " . $this->data['companyname'];
+                $this->errorRequestAndResponseToFile();
             }
         } else {
             $this->isError = true;

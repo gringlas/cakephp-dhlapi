@@ -37,6 +37,7 @@ class CancelPickupDHLApiRequest extends DHLApiRequest
                 $this->errorCode = (String)$xml->xpath('//ConditionCode')[0];
                 $this->errorMessage = (String)$xml->xpath('//ConditionData')[0];
                 $logMessage = $this->errorMessage . ". For requestor: " . $this->data['requestorName'];
+                $this->errorRequestAndResponseToFile();
             }
         } else {
             $this->isError = true;

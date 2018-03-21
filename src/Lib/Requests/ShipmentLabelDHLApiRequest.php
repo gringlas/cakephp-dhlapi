@@ -53,12 +53,14 @@ class ShipmentLabelDHLApiRequest extends DHLApiRequest
                     $this->errorCode = (String)$xml->xpath('//ConditionCode')[0];
                     $this->errorMessage = (String)$xml->xpath('//ConditionData')[0];
                     $logMessage = $this->errorMessage . ". For company: " . $this->data['praxis'];
+                    $this->errorRequestAndResponseToFile();
                 }
             } else {
                 $this->isError = true;
                 $this->errorCode = 500;
                 $this->errorMessage = "Propably UTF-8 Error. No Shipment Label generated, but won't block process.";
                 $logMessage = $this->errorMessage . ". For company: " . $this->data['praxis'];
+                $this->errorRequestAndResponseToFile();
             }
         } else {
             $this->isError = true;

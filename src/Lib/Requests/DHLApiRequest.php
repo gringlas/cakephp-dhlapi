@@ -1,6 +1,9 @@
 <?php
 namespace DHLApi\Lib\Requests;
 use Cake\Chronos\Chronos;
+use Cake\Core\App;
+use Cake\Filesystem\File;
+use Cake\I18n\FrozenTime;
 
 /**
  * Created by IntelliJ IDEA.
@@ -119,5 +122,26 @@ abstract class DHLApiRequest
     protected function replaceUmlauts($string)
     {
         return str_replace(['ü','Ü','ä','Ä','ö','Ö','ß'],['u','U','a','A','o','O','s'], $string);
+    }
+
+
+    /**
+     * If an error during a DHL API request occurs this function can be called to log request and if given the response.
+     * As the design of this Plugin is not that advanced this function has to be called manualy :(
+     */
+    protected function errorRequestAndResponseToFile()
+    {
+        $time = new FrozenTime();
+        $class = explode('\\', get_class($this))[sizeof(explode('\\', get_class($this))) - 1];
+        $filename = $class . '_' . $time->format('Y-m-d_H:i') . '.xml';
+        $errorRequestFile = new File(LOGS . 'api_errors' . DS . 'request' . DS . $filename, true);
+        $errorRequestFile->write($this->request);
+        $errorRequestFile->close();
+        if ($this->dhlResponseBody) {
+            $errorResponseFile = new File(LOGS . 'api_errors' . DS . 'response' . DS . $filename, true);
+            $errorResponseFile->write($this->dhlResponseBody);
+            $errorResponseFile->close();
+        }
+
     }
 }

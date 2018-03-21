@@ -32,6 +32,7 @@ class DHLApiTest extends TestCase
             'accountNumber' => '144053708',
             'messageReference' => 'ImexDental PHPUNITTest' . time()
         ];
+        $this->logPath = LOGS . 'api_errors' . DS;
         parent::setUp();
     }
 
@@ -67,9 +68,17 @@ class DHLApiTest extends TestCase
 
     public function testBookpickupWithError()
     {
+        $frozenTime = new FrozenTime();
         $date = new FrozenDate();
         $result = $this->doPickup($date->modify("next Monday"), "18:00", "20:00");
         $this->assertCount(1, $result['errorMessages'], "Die Abholung ist ungültig.");
+
+        $requestErrorFilename = $this->logPath  . 'request' . DS . "BookPickupDHLApiRequest_" . $frozenTime->format('Y-m-d_H:i') . '.xml';
+        $this->assertFileExists($requestErrorFilename, "Eine Datei mit dem fehlerhaften Request wurde angelegt");
+        $responseErrorFilename = $this->logPath  . 'response' . DS . "BookPickupDHLApiRequest_" . $frozenTime->format('Y-m-d_H:i') . '.xml';
+        $this->assertFileExists($requestErrorFilename, "Eine Datei mit dem fehlerhafgen Response wurde angelegt");
+        unlink($requestErrorFilename);
+        unlink($responseErrorFilename);
     }
 
 
@@ -115,18 +124,25 @@ class DHLApiTest extends TestCase
 
     public function testCancelPickupNotExistingOrder()
     {
-        $date = new FrozenDate();
+        $frozenTime = new FrozenTime();
         $pickupId = 26871;
         $data = [
             'confirmationNumber' => $pickupId + 1,
             'requestorName' => 'Sebastian Köller',
             'countryCode' => 'DE',
             'reason' => '001',
-            'pickupDate' => $date->modify("+3 day")->format('Y-m-d')
+            'pickupDate' => $frozenTime->modify("+3 day")->format('Y-m-d')
         ];
         $cancelPickupApiRequest = new CancelPickupDHLApiRequest($data, $this->config);
         $cancelPickupApiRequest->callApi();
         $this->assertTrue($cancelPickupApiRequest->getIsError(), "Eine erfundene Abholung wurde erfolgreich storniert.");
+
+        $requestErrorFilename = $this->logPath  . 'request' . DS . "CancelPickupDHLApiRequest_" . $frozenTime->format('Y-m-d_H:i') . '.xml';
+        $this->assertFileExists($requestErrorFilename, "Eine Datei mit dem fehlerhaften Request wurde angelegt");
+        $responseErrorFilename = $this->logPath  . 'response' . DS . "CancelPickupDHLApiRequest_" . $frozenTime->format('Y-m-d_H:i') . '.xml';
+        $this->assertFileExists($requestErrorFilename, "Eine Datei mit dem fehlerhafgen Response wurde angelegt");
+        unlink($requestErrorFilename);
+        unlink($responseErrorFilename);
     }
 
 
@@ -191,5 +207,38 @@ class DHLApiTest extends TestCase
         file_put_contents($filename, base64_decode($response['label']));
         $this->assertEquals('application/pdf', mime_content_type($filename));
         unlink($filename);
+    }
+
+
+    /**
+     * If an error on the DHL API occures the requests and if given the response will be logged with the
+     * DHLApiRequest::errorRequestAndResponseToFile() into separate xml files.
+     *
+     */
+    public function testShipmentLabelWithErrorWillCreateXMLErrorLogs()
+    {
+        $frozenTime = new FrozenTime();
+        $data = [
+            'praxis' => 'PHPUNIT Testpraxis viel zu langer Name ist das hier und sollte eigentlich nicht klappen',
+            'street' => 'Kreuzstr. 1-3',
+            'city' => 'Mülheim',
+            'district' => '',
+            'zip' => "asdasdasd",
+            'contact' => 'Sebastian Köller',
+            'phone' => '0208 88 387 559',
+            'cases' => 1,
+            'date' => $frozenTime->modify('+1 day')->format('d.m.Y')
+        ];
+        $shipmentLabelApiRequest = new ShipmentLabelDHLApiRequest($data, $this->config);
+        $shipmentLabelApiRequest->callApi();
+        $response = $shipmentLabelApiRequest->getResponse();
+        $this->assertTrue($response['isError'], "DHL API meldet einen Fehler in der Anfrage.");
+
+        $requestErrorFilename = $this->logPath  . 'request' . DS . "ShipmentLabelDHLApiRequest_" . $frozenTime->format('Y-m-d_H:i') . '.xml';
+        $this->assertFileExists($requestErrorFilename, "Eine Datei mit dem fehlerhaften Request wurde angelegt");
+        $responseErrorFilename = $this->logPath  . 'response' . DS . "ShipmentLabelDHLApiRequest_" . $frozenTime->format('Y-m-d_H:i') . '.xml';
+        $this->assertFileExists($requestErrorFilename, "Eine Datei mit dem fehlerhafgen Response wurde angelegt");
+        unlink($requestErrorFilename);
+        unlink($responseErrorFilename);
     }
 }

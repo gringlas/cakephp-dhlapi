@@ -210,6 +210,30 @@ class DHLApiTest extends TestCase
     }
 
 
+    public function testShipmentLabelNoContactAndPhone()
+    {
+        $frozenTime = new FrozenTime();
+        $data = [
+            'praxis' => 'PHPUNIT Testpraxis',
+            'street' => 'Kreuzstr. 1-3',
+            'city' => 'Mülheim',
+            'district' => '',
+            'zip' => 45468,
+            'contact' => '',
+            'phone' => '',
+            'cases' => 1,
+            'date' => $frozenTime->modify('+1 day')->format('d.m.Y')
+        ];
+        $shipmentLabelApiRequest = new ShipmentLabelDHLApiRequest($data, $this->config);
+        $shipmentLabelApiRequest->callApi();
+        $response = $shipmentLabelApiRequest->getResponse();
+        $filename = 'tmp/shippingLabelTest.pdf';
+        file_put_contents($filename, base64_decode($response['label']));
+        $this->assertEquals('application/pdf', mime_content_type($filename));
+        unlink($filename);
+    }
+
+
     /**
      * If an error on the DHL API occures the requests and if given the response will be logged with the
      * DHLApiRequest::errorRequestAndResponseToFile() into separate xml files.

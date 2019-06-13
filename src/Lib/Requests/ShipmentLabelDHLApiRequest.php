@@ -24,6 +24,13 @@ class ShipmentLabelDHLApiRequest extends DHLApiRequest
     {
         $this->data['praxis'] = substr($this->data['praxis'],0,34);
         $this->data['date'] = $this->ensureYmd($this->data['date']);
+        $this->data['contact'] = $this->replaceUmlauts($this->data['contact']);
+        if ($this->data['contact'] == "") {
+            $this->data['contact'] = 'na';
+        }
+        if ($this->data['phone'] == "") {
+            $this->data['phone'] = 'na';
+        }
     }
 
 
@@ -154,7 +161,7 @@ ship-val-req_EA.xsd">
     <CountryCode>DE</CountryCode>
     <CountryName>Germany</CountryName>
     <Contact>
-        <PersonName>' . $this->replaceUmlauts($this->data['contact']) . '</PersonName>
+        <PersonName>' . $this->data['contact'] . '</PersonName>
         <PhoneNumber>'.$this->data['phone'].'</PhoneNumber>
         <PhoneExtension>na</PhoneExtension>
         <FaxNumber>na</FaxNumber>

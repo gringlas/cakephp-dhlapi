@@ -121,7 +121,7 @@ ship-val-req_EA.xsd">
     <CountryCode>DE</CountryCode>
     <CountryName>Germany</CountryName>
     <Contact>
-        <PersonName> </PersonName>
+        <PersonName>na</PersonName>
         <PhoneNumber>0201749990</PhoneNumber>
         <PhoneExtension>na</PhoneExtension>
         <FaxNumber>na</FaxNumber>

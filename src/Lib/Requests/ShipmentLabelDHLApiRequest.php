@@ -22,6 +22,7 @@ class ShipmentLabelDHLApiRequest extends DHLApiRequest
 
     private function ensureData()
     {
+        $this->data['praxis'] = str_replace('&', 'und', $this->data['praxis']);
         $this->data['praxis'] = substr($this->data['praxis'],0,34);
         $this->data['date'] = $this->ensureYmd($this->data['date']);
         $this->data['contact'] = $this->replaceUmlauts($this->data['contact']);

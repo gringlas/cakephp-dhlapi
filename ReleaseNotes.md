@@ -8,3 +8,8 @@ DHLAPIRequest::errorRequestAndResponseToFile() den Request und die Response in e
 ## 1.3.0 (13.06.2019)
 
 * Das Versandlabel liefert "na", wenn die Felder data['contact'] oder data['phone'] leer sein sollten.
+
+## 1.4.0 (09.07.2019)
+
+* Beim Versandlabel kam es vor, dass nach der Einbindung ins MY dort Praxennamen mit einem "&" Zeichen einen xml Fehler
+erzeugten. Daher wird nun im ShipmentDHLApiRequest::ensureData() für data['praxis'] das "&" in ein und umgewandelt.

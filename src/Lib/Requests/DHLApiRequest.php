@@ -121,7 +121,7 @@ abstract class DHLApiRequest
      */
     protected function replaceUmlauts($string)
     {
-        return str_replace(['ü','Ü','ä','Ä','ö','Ö','ß'],['u','U','a','A','o','O','s'], $string);
+        return str_replace(['ü','Ü','ä','Ä','ö','Ö','ß', '–'],['u','U','a','A','o','O','s', '-'], $string);
     }
 
 

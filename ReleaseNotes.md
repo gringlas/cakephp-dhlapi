@@ -13,3 +13,8 @@ DHLAPIRequest::errorRequestAndResponseToFile() den Request und die Response in e
 
 * Beim Versandlabel kam es vor, dass nach der Einbindung ins MY dort Praxennamen mit einem "&" Zeichen einen xml Fehler
 erzeugten. Daher wird nun im ShipmentDHLApiRequest::ensureData() für data['praxis'] das "&" in ein und umgewandelt.
+
+## 1.5.0 (29.08.2019)
+
+* Die replaceUmlauts Funktion wurde um den Gedankenstrich (–) durch Bindestrich zu ersetzen (-)
+* Das Shipmentlabel wendet die replaceUmlauts Funktion auf phone und conact an
